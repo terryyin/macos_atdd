@@ -1,26 +1,26 @@
 require 'osaka'
 
-
 Given(/^the caculator is started$/) do
   @calculator = Osaka::RemoteControl.new("Calculator")
   @calculator.activate
+  @calculator.set_current_window(1)
 end
 
-Given(/^I input "([^"]*)"$/) do |arg1|
-  @calculator.click!(at.button("1").group(2))
-  @calculator.click!(at.button("+").group(2))
-  @calculator.click!(at.button("4").group(2))
-  @calculator.click!(at.button("=").group(2))
+Given(/^I input "([^"]*)"$/) do |key|
+  button_index = {'1' => 6, '2' => 1, '+' => 13, '=' => 2}[key]
+  @calculator.click!(at.button(button_index).group(2))
 end
 
-Given(/^then "([^"]*)"$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Given(/^then "([^"]*)"$/) do |key|
+  step %{I input "#{key}"}
 end
 
-When(/^I press "([^"]*)"$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+When(/^I press "([^"]*)"$/) do |key|
+  step %{I input "#{key}"}
 end
 
-Then(/^I should see "([^"]*)" as the output$/) do |arg1|
-  pending # Write code here that turns the phrase above into concrete actions
+Then(/^I should see "([^"]*)" as the output$/) do |expectation|
+  result = @calculator.get!('value', at.static_text(1).group(1))
+  # please use a real assertion gem in your project
+  raise "#{result} is not #{expectation}" unless result == expectation
 end
